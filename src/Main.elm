@@ -12,12 +12,12 @@ import Svg.Events exposing (onClick)
 
 
 type alias Model =
-    {}
+    { zapped : Bool }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( { zapped = False}, Cmd.none )
 
 
 
@@ -30,8 +30,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
-
+    ( {model | zapped = not model.zapped}, Cmd.none )
 
 
 ---- VIEW ----
@@ -39,11 +38,18 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        color = if model.zapped == True then
+                  "red"
+                else 
+                   "black"         
+    in
+        
     div []
         [    svg
     [ width "120"
-    , height "120"
-    , viewBox "0 0 120 120"
+    , height "1000"
+    , viewBox "0 0 120 1000"
     ]
     [ rect
         [ x "10"
@@ -53,8 +59,9 @@ view model =
         , rx "15"
         , ry "15"
         , onClick Zap
+        , fill color
         ]
-        []
+        [animate [ from "0", to "1000", begin "0s", dur "3s", repeatCount "indefinite", attributeName "y"] []]
     ]
         ]
 
