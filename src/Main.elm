@@ -17,13 +17,14 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [{ box = encompassedRectangle 300 0, zapped = False}], Cmd.none )
+    ( [ SmartRectangle 0 False 300], Cmd.none )
 
 
 type alias SmartRectangle = 
   {
-    box : Svg Msg
+    id : Int
   , zapped : Bool
+  , xPosition : Int 
   }
 ---- UPDATE ----
 
@@ -36,7 +37,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of 
         Zap indexNo ->
-            ( model, Cmd.none )
+            let
+                updateZappedElement smartRectangle = if smartRectangle.id == indexNo then
+                                                        {smartRectangle | zapped = True}
+                                                     else 
+                                                        smartRectangle
+                    
+            in
+            ( List.map updateZappedElement model, Cmd.none )
 
 
 ---- VIEW ----
@@ -56,7 +64,7 @@ view model =
 displayRectangle : SmartRectangle -> Svg Msg
 displayRectangle smartRectangle =
     if smartRectangle.zapped == False then
-        smartRectangle.box
+        encompassedRectangle smartRectangle.xPosition smartRectangle.id
     else
         Svg.text ""
 
