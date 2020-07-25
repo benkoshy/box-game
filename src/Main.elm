@@ -26,8 +26,8 @@ init =
 randomRectangle : Random.Generator SmartRectangle
 randomRectangle = Random.map3
     (\x y -> SmartRectangle 0 False x y)
-    (Random.int 0 100)
-    (Random.int 0 100)
+    (Random.int 0 800)
+    (Random.int 0 -700)
     (Random.int 4 10)
 
 initialRectangles : Random.Generator (List SmartRectangle)
