@@ -12,15 +12,19 @@ import Svg.Events exposing (onClick)
 
 
 type alias Model =
-    { zapped : Bool }
+     List SmartRectangle
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { zapped = False}, Cmd.none )
+    ( [{ box = encompassedRectangle 300 , zapped = False}], Cmd.none )
 
 
-
+type alias SmartRectangle = 
+  {
+    box : Svg Msg
+  , zapped : Bool
+  }
 ---- UPDATE ----
 
 
@@ -30,7 +34,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( {model | zapped = not model.zapped}, Cmd.none )
+    ( model, Cmd.none )
 
 
 ---- VIEW ----
@@ -44,26 +48,20 @@ view model =
             , height "800"
             , viewBox "0 0 800 800"
             ]
-            [ (encompassedRectangle model 30 )
-            , (encompassedRectangle model 400 )
-            , (encompassedRectangle model 600 )
-            ]
+            (List.map (\x -> x.box) model)
+            
             
         ]
 
-encompassedRectangle : Model -> Int -> Svg Msg
-encompassedRectangle model xPosition =
-    let
-        color = if model.zapped == True then
-                  "red"
-                else 
-                   "black"     
+encompassedRectangle : Int -> Svg Msg
+encompassedRectangle xPosition =
+    let     
         animationFactor = animate [ from "200", to "800", begin "0s", dur "13s", repeatCount "indefinite", attributeName "y"] []    
     in    
         rect
                 [ width "100"
                 , height "100"
-                , fill color
+                , fill "red"
                 , onClick Zap
                 , x (String.fromInt xPosition)
                 , y "0"
