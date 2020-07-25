@@ -32,8 +32,9 @@ randomRectangle = Random.map3
 
 initialRectangles : Random.Generator (List SmartRectangle)
 initialRectangles =
-    Random.list 10 randomRectangle
+    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\id x -> {x | id = id}) )
 
+--  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 
 type alias SmartRectangle = 
   { id : Int
@@ -63,10 +64,7 @@ update msg model =
             in
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles smartRectangles ->
-            let
-                orderedRectangles = List.indexedMap (\id x -> {x | id = id}) smartRectangles                    
-            in
-                (orderedRectangles, Cmd.none)       
+                (smartRectangles, Cmd.none)       
 
 
 
