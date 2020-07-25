@@ -20,12 +20,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ {id = 0 , zapped = False, xPosition = 300, yPosition = 0,    duration = 7}
-      , {id = 1 , zapped = False, xPosition = 600, yPosition = -50,  duration = 10}
-      , {id = 2 , zapped = False, xPosition = 55,  yPosition = -560, duration = 6}
-      , {id = 3 , zapped = False, xPosition = 700, yPosition = -690, duration = 5}
-      ]
-      , Cmd.none )
+    ( [ ], Random.generate GenerateRandomRectangles initialRectangles )
 
 
 randomRectangle : Random.Generator SmartRectangle
@@ -52,6 +47,7 @@ type alias SmartRectangle =
 
 type Msg
     = Zap Int
+    | GenerateRandomRectangles (List SmartRectangle)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -66,6 +62,12 @@ update msg model =
                     
             in
             ( List.map updateZappedElement model, Cmd.none )
+        GenerateRandomRectangles smartRectangles ->
+            let
+                orderedRectangles = List.indexedMap (\id x -> {x | id = id}) smartRectangles                    
+            in
+                (orderedRectangles, Cmd.none)       
+
 
 
 ---- VIEW ----
