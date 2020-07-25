@@ -82,7 +82,7 @@ encompassedRectangle xPosition yPosition id duration =
         rect
                 [ width "100"
                 , height "100"
-                , fill "red"
+                , fill "dodgerblue"
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
                 , y (String.fromInt yPosition)
