@@ -17,10 +17,10 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ {id = 0 , zapped = False, xPosition = 300, duration = 7}
-      , {id = 1 , zapped = False, xPosition = 600, duration = 7}
-      , {id = 2 , zapped = False, xPosition = 55, duration = 7}
-      , {id = 3 , zapped = False, xPosition = 700, duration = 7}
+    ( [ {id = 0 , zapped = False, xPosition = 300, yPosition = 0, duration = 7}
+      , {id = 1 , zapped = False, xPosition = 600, yPosition = -50, duration = 10}
+      , {id = 2 , zapped = False, xPosition = 55,  yPosition = -560, duration = 6}
+      , {id = 3 , zapped = False, xPosition = 700, yPosition = -690, duration = 5}
       ]
       , Cmd.none )
 
@@ -29,6 +29,7 @@ type alias SmartRectangle =
   { id : Int
   , zapped : Bool
   , xPosition : Int 
+  , yPosition : Int
   , duration : Int
   }
 ---- UPDATE ----
@@ -69,14 +70,14 @@ view model =
 displayRectangle : SmartRectangle -> Svg Msg
 displayRectangle smartRectangle =
     if smartRectangle.zapped == False then
-        encompassedRectangle smartRectangle.xPosition smartRectangle.id smartRectangle.duration
+        encompassedRectangle smartRectangle.xPosition smartRectangle.yPosition smartRectangle.id smartRectangle.duration
     else
         Svg.text ""
 
-encompassedRectangle : Int -> Int -> Int -> Svg Msg
-encompassedRectangle xPosition id duration =
+encompassedRectangle : Int -> Int -> Int -> Int -> Svg Msg
+encompassedRectangle xPosition yPosition id duration =
     let     
-        animationFactor = animate [ from "0", to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "indefinite", attributeName "y"] []    
+        animationFactor = animate [ from (String.fromInt yPosition), to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "indefinite", attributeName "y"] []    
     in  
         rect
                 [ width "100"
@@ -84,7 +85,7 @@ encompassedRectangle xPosition id duration =
                 , fill "red"
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
-                , y "0"
+                , y (String.fromInt yPosition)
                 , rx "15", ry "15"
                 ]
                 [ animationFactor
