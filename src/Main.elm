@@ -17,7 +17,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [{ box = encompassedRectangle 300 , zapped = False}], Cmd.none )
+    ( [{ box = encompassedRectangle 300 0 , zapped = False}], Cmd.none )
 
 
 type alias SmartRectangle = 
@@ -29,7 +29,7 @@ type alias SmartRectangle =
 
 
 type Msg
-    = Zap
+    = Zap Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -53,8 +53,8 @@ view model =
             
         ]
 
-encompassedRectangle : Int -> Svg Msg
-encompassedRectangle xPosition =
+encompassedRectangle : Int -> Int -> Svg Msg
+encompassedRectangle xPosition id =
     let     
         animationFactor = animate [ from "200", to "800", begin "0s", dur "13s", repeatCount "indefinite", attributeName "y"] []    
     in    
@@ -62,7 +62,7 @@ encompassedRectangle xPosition =
                 [ width "100"
                 , height "100"
                 , fill "red"
-                , onClick Zap
+                , onClick (Zap id)
                 , x (String.fromInt xPosition)
                 , y "0"
                 , rx "15", ry "15"
