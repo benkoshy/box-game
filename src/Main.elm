@@ -8,6 +8,9 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 
+import Random
+
+
 ---- MODEL ----
 
 
@@ -17,12 +20,24 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ {id = 0 , zapped = False, xPosition = 300, yPosition = 0, duration = 7}
-      , {id = 1 , zapped = False, xPosition = 600, yPosition = -50, duration = 10}
+    ( [ {id = 0 , zapped = False, xPosition = 300, yPosition = 0,    duration = 7}
+      , {id = 1 , zapped = False, xPosition = 600, yPosition = -50,  duration = 10}
       , {id = 2 , zapped = False, xPosition = 55,  yPosition = -560, duration = 6}
       , {id = 3 , zapped = False, xPosition = 700, yPosition = -690, duration = 5}
       ]
       , Cmd.none )
+
+
+randomRectangle : Random.Generator SmartRectangle
+randomRectangle = Random.map3
+    (\x y -> SmartRectangle 0 False x y)
+    (Random.int 0 100)
+    (Random.int 0 100)
+    (Random.int 4 10)
+
+initialRectangles : Random.Generator (List SmartRectangle)
+initialRectangles =
+    Random.list 10 randomRectangle
 
 
 type alias SmartRectangle = 
