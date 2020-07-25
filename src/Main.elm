@@ -17,7 +17,12 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ {id = 0 , zapped = False, xPosition = 300, duration = 7}], Cmd.none )
+    ( [ {id = 0 , zapped = False, xPosition = 300, duration = 7}
+      , {id = 1 , zapped = False, xPosition = 600, duration = 7}
+      , {id = 2 , zapped = False, xPosition = 55, duration = 7}
+      , {id = 3 , zapped = False, xPosition = 700, duration = 7}
+      ]
+      , Cmd.none )
 
 
 type alias SmartRectangle = 
@@ -55,8 +60,8 @@ view model =
     div []
         [   svg
             [ width "800"
-            , height "800"
-            , viewBox "0 0 800 800"
+            , height "700"
+            , viewBox "0 0 800 700"
             ]
             (List.map displayRectangle model)
         ]
