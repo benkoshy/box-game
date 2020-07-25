@@ -17,14 +17,14 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ SmartRectangle 0 False 300], Cmd.none )
+    ( [ {id = 0 , zapped = False, xPosition = 300, duration = 7}], Cmd.none )
 
 
 type alias SmartRectangle = 
-  {
-    id : Int
+  { id : Int
   , zapped : Bool
   , xPosition : Int 
+  , duration : Int
   }
 ---- UPDATE ----
 
@@ -64,14 +64,14 @@ view model =
 displayRectangle : SmartRectangle -> Svg Msg
 displayRectangle smartRectangle =
     if smartRectangle.zapped == False then
-        encompassedRectangle smartRectangle.xPosition smartRectangle.id
+        encompassedRectangle smartRectangle.xPosition smartRectangle.id smartRectangle.duration
     else
         Svg.text ""
 
-encompassedRectangle : Int -> Int -> Svg Msg
-encompassedRectangle xPosition id =
+encompassedRectangle : Int -> Int -> Int -> Svg Msg
+encompassedRectangle xPosition id duration =
     let     
-        animationFactor = animate [ from "200", to "800", begin "0s", dur "13s", repeatCount "indefinite", attributeName "y"] []    
+        animationFactor = animate [ from "0", to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "indefinite", attributeName "y"] []    
     in  
         rect
                 [ width "100"
