@@ -9,6 +9,7 @@ import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 
 import Random
+import Time
 
 
 ---- MODEL ----
@@ -33,6 +34,15 @@ initialRectangles =
     Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, yPosition = x.yPosition, duration = x.duration}))
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
+generateRectangle : Model -> Random.Generator SmartRectangle
+generateRectangle model = 
+    randomRectangle |> Random.map (\rectangelWithoutId -> convertToRectangleWithId (List.length model) rectangelWithoutId)
+
+
+convertToRectangleWithId : Int -> RectangleWithoutId -> SmartRectangle
+convertToRectangleWithId id rectangelWithoutId =
+    SmartRectangle id rectangelWithoutId.zapped rectangelWithoutId.xPosition rectangelWithoutId.yPosition rectangelWithoutId.duration
+
 
 type alias RectangleWithoutId = 
  {
@@ -55,6 +65,8 @@ type alias SmartRectangle =
 type Msg
     = Zap Int
     | GenerateRandomRectangles (List SmartRectangle)
+    | InitialiseRectangle Time.Posix
+    | GenerateRandomRectangle SmartRectangle
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -70,9 +82,11 @@ update msg model =
             in
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, Cmd.none)       
-
-
+            (rectangles, Cmd.none)
+        GenerateRandomRectangle rectangle ->
+            ((model ++ [rectangle]), Cmd.none)
+        InitialiseRectangle time ->
+            (model, Random.generate GenerateRandomRectangle (generateRectangle model))       
 
 ---- VIEW ----
 
@@ -115,12 +129,12 @@ encompassedRectangle xPosition yPosition id duration =
 
 ---- SUBSCRIPTIONS
 
-{-
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Time.every 1000 InitialiseRectangle
 
--}
+
 ---- PROGRAM ----
 
 
@@ -130,5 +144,5 @@ main =
         { view = view
         , init = \_ -> init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
