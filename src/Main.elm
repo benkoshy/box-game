@@ -13,7 +13,6 @@ import Random
 
 ---- MODEL ----
 
-
 type alias Model =
      List SmartRectangle
 
@@ -22,19 +21,26 @@ init : ( Model, Cmd Msg )
 init =
     ( [ ], Random.generate GenerateRandomRectangles initialRectangles )
 
-
-randomRectangle : Random.Generator SmartRectangle
+randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
-    (\x y -> SmartRectangle 0 False x y)
+    (\x y z -> RectangleWithoutId False x y z)
     (Random.int 0 800)
     (Random.int 0 -1400)
     (Random.int 4 10)
 
 initialRectangles : Random.Generator (List SmartRectangle)
 initialRectangles =
-    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\id x -> {x | id = id}) )
+    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, yPosition = x.yPosition, duration = x.duration}))
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
+
+type alias RectangleWithoutId = 
+ {
+    zapped : Bool
+  , xPosition : Int 
+  , yPosition : Int
+  , duration : Int
+ }
 
 type alias SmartRectangle = 
   { id : Int
@@ -43,8 +49,8 @@ type alias SmartRectangle =
   , yPosition : Int
   , duration : Int
   }
----- UPDATE ----
 
+---- UPDATE ----
 
 type Msg
     = Zap Int
@@ -63,13 +69,12 @@ update msg model =
                     
             in
             ( List.map updateZappedElement model, Cmd.none )
-        GenerateRandomRectangles smartRectangles ->
-                (smartRectangles, Cmd.none)       
+        GenerateRandomRectangles rectangles ->
+            (rectangles, Cmd.none)       
 
 
 
 ---- VIEW ----
-
 
 view : Model -> Html Msg
 view model =        
@@ -106,6 +111,16 @@ encompassedRectangle xPosition yPosition id duration =
                 [ animationFactor
                 ]        
 
+
+
+---- SUBSCRIPTIONS
+
+{-
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every 1000 InitialiseRectangle
+
+-}
 ---- PROGRAM ----
 
 
