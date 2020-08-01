@@ -22,12 +22,36 @@ init : ( Model, Cmd Msg )
 init =
     ( [ ], Random.generate GenerateRandomRectangles initialRectangles )
 
+yRandomMinimum : Int
+yRandomMinimum = -1400
+
+xRandomMaximum : Int
+xRandomMaximum = 800
+
+
 randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
-    (Random.int 0 800)
-    (Random.int 0 -1400)
+    (Random.int 0 xRandomMaximum)
+    (Random.int 0 yRandomMinimum)
     (Random.int 4 10)
+
+--- calculate
+--- starting position
+--- ending position
+--- duration
+--- then work out whether: (i) it is to be displayed and secondly, (ii) whether we should end the
+--- animation
+-- if all of them have passed then proceed to the next level.
+-- we need the current time.
+-- also we need to iterate via level.
+
+
+hasCrossedTheFinishLine : SmartRectangle -> Bool
+hasCrossedTheFinishLine rectange = 
+    False 
+
+
 
 initialRectangles : Random.Generator (List SmartRectangle)
 initialRectangles =
@@ -111,7 +135,7 @@ displayRectangle smartRectangle =
 encompassedRectangle : Int -> Int -> Int -> Int -> Svg Msg
 encompassedRectangle xPosition yPosition id duration =
     let     
-        animationFactor = animate [ from (String.fromInt yPosition), to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "indefinite", attributeName "y"] []    
+        animationFactor = animate [ from (String.fromInt yPosition), to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
     in  
         rect
                 [ width "100"
@@ -131,8 +155,9 @@ encompassedRectangle xPosition yPosition id duration =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-  Time.every 1000 InitialiseRectangle
+subscriptions model = Sub.none
+
+  -- Time.every 1000 InitialiseRectangle
 
 
 ---- PROGRAM ----
@@ -145,4 +170,4 @@ main =
         , init = \_ -> init
         , update = update
         , subscriptions = subscriptions
-        }
+    }
