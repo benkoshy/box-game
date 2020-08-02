@@ -96,18 +96,21 @@ update msg model =
                                                         {smartRectangle | zapped = True}
                                                      else 
                                                         smartRectangle
-                areAllZapped rectangle = rectangle.zapped == True                                                     
-                    
+
+                areAllZapped rectangle = rectangle.zapped == True
             in
             if List.all (areAllZapped) (List.map updateZappedElement model) then
-                update EndLevel model
+                clearLevel
             else
                 ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
             (rectangles, Cmd.none)
         EndLevel ->
-            ([], Cmd.none)      
+            clearLevel     
 
+
+clearLevel : (Model, Cmd Msg)
+clearLevel = ([], Cmd.none) 
 ---- VIEW ----
 
 view : Model -> Html Msg
