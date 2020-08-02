@@ -35,7 +35,7 @@ startingTimeRandomMax : Int
 startingTimeRandomMax = 6
 
 xRandomMaximum : Int
-xRandomMaximum = 800
+xRandomMaximum = 800 - rectangleWidth
 
 randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
@@ -99,8 +99,8 @@ update msg model =
                 areAllZapped rectangle = rectangle.zapped                                                       
                     
             in
-            if List.all (areAllZapped) model then
-                update EndLevel
+            if List.all (areAllZapped) (List.map updateZappedElement model) then
+                update EndLevel model
             else
                 ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
@@ -128,11 +128,14 @@ displayRectangle smartRectangle =
     else
         Svg.text ""
 
-boxHeight : Int
-boxHeight = 100
+rectangleWidth : Int
+rectangleWidth  = 100
+
+rectangleHeight : Int
+rectangleHeight = 100
 
 startingBoxPosition : Int
-startingBoxPosition = 0 - boxHeight
+startingBoxPosition = 0 - rectangleHeight
 
 encompassedRectangle : Int -> Int -> Int -> Int -> Svg Msg
 encompassedRectangle xPosition startingTime id duration =
@@ -140,8 +143,8 @@ encompassedRectangle xPosition startingTime id duration =
         animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
     in  
         rect
-                [ width "100"
-                , height (String.fromInt boxHeight)
+                [ width (String.fromInt rectangleWidth)
+                , height (String.fromInt rectangleHeight)
                 , fill "dodgerblue"
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
