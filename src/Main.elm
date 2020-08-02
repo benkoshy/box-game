@@ -22,8 +22,8 @@ init : ( Model, Cmd Msg )
 init =
     ( [ ], Random.generate GenerateRandomRectangles initialRectangles )
 
-yRandomMinimum : Int
-yRandomMinimum = -1400
+startingTimeRandomMax : Int
+startingTimeRandomMax = 6
 
 xRandomMaximum : Int
 xRandomMaximum = 800
@@ -33,7 +33,7 @@ randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int 0 xRandomMaximum)
-    (Random.int 0 yRandomMinimum)
+    (Random.int 0 startingTimeRandomMax)
     (Random.int 4 10)
 
 --- calculate
@@ -55,7 +55,7 @@ hasCrossedTheFinishLine rectange =
 
 initialRectangles : Random.Generator (List SmartRectangle)
 initialRectangles =
-    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, yPosition = x.yPosition, duration = x.duration}))
+    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
@@ -65,14 +65,14 @@ generateRectangle model =
 
 convertToRectangleWithId : Int -> RectangleWithoutId -> SmartRectangle
 convertToRectangleWithId id rectangelWithoutId =
-    SmartRectangle id rectangelWithoutId.zapped rectangelWithoutId.xPosition rectangelWithoutId.yPosition rectangelWithoutId.duration
+    SmartRectangle id rectangelWithoutId.zapped rectangelWithoutId.xPosition rectangelWithoutId.startingTime rectangelWithoutId.duration
 
 
 type alias RectangleWithoutId = 
  {
     zapped : Bool
   , xPosition : Int 
-  , yPosition : Int
+  , startingTime : Int
   , duration : Int
  }
 
@@ -80,7 +80,7 @@ type alias SmartRectangle =
   { id : Int
   , zapped : Bool
   , xPosition : Int 
-  , yPosition : Int
+  , startingTime : Int
   , duration : Int
   }
 
@@ -128,22 +128,29 @@ view model =
 displayRectangle : SmartRectangle -> Svg Msg
 displayRectangle smartRectangle =
     if smartRectangle.zapped == False then
-        encompassedRectangle smartRectangle.xPosition smartRectangle.yPosition smartRectangle.id smartRectangle.duration
+        encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration
     else
         Svg.text ""
 
+
+boxHeight : Int
+boxHeight = 100
+
+startingBoxPosition : Int
+startingBoxPosition = 0 - boxHeight
+
 encompassedRectangle : Int -> Int -> Int -> Int -> Svg Msg
-encompassedRectangle xPosition yPosition id duration =
+encompassedRectangle xPosition startingTime id duration =
     let     
-        animationFactor = animate [ from (String.fromInt yPosition), to "800", begin "0s", dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
+        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
     in  
         rect
                 [ width "100"
-                , height "100"
+                , height (String.fromInt boxHeight)
                 , fill "dodgerblue"
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
-                , y (String.fromInt yPosition)
+                , y (String.fromInt startingBoxPosition)
                 , rx "15", ry "15"
                 ]
                 [ animationFactor
