@@ -10,6 +10,18 @@ import Svg.Events exposing (onClick)
 
 import Random
 import Time
+import Process
+import Task
+
+---- Parameterise the levels.
+{-
+    more boxes more level.
+    faster speeds
+    longer time periods per levels.
+
+-}
+
+
 
 
 ---- MODEL ----
@@ -28,7 +40,6 @@ startingTimeRandomMax = 6
 xRandomMaximum : Int
 xRandomMaximum = 800
 
-
 randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
@@ -36,22 +47,9 @@ randomRectangle = Random.map3
     (Random.int 0 startingTimeRandomMax)
     (Random.int 4 10)
 
---- calculate
---- starting position
---- ending position
---- duration
---- then work out whether: (i) it is to be displayed and secondly, (ii) whether we should end the
---- animation
--- if all of them have passed then proceed to the next level.
--- we need the current time.
--- also we need to iterate via level.
-
-
 hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
     False 
-
-
 
 initialRectangles : Random.Generator (List SmartRectangle)
 initialRectangles =
@@ -91,6 +89,7 @@ type Msg
     | GenerateRandomRectangles (List SmartRectangle)
     | InitialiseRectangle Time.Posix
     | GenerateRandomRectangle SmartRectangle
+    | EndLevel
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -106,11 +105,13 @@ update msg model =
             in
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, Cmd.none)
+            (rectangles, sleep2Seconds)
         GenerateRandomRectangle rectangle ->
             ((model ++ [rectangle]), Cmd.none)
         InitialiseRectangle time ->
-            (model, Random.generate GenerateRandomRectangle (generateRectangle model))       
+            (model, Random.generate GenerateRandomRectangle (generateRectangle model)) 
+        EndLevel ->
+            ([], Cmd.none)      
 
 ---- VIEW ----
 
@@ -156,6 +157,11 @@ encompassedRectangle xPosition startingTime id duration =
                 [ animationFactor
                 ]        
 
+---- End Level at this time
+sleep2Seconds : Cmd Msg
+sleep2Seconds =
+    Process.sleep 2000
+        |> Task.perform (\_ -> EndLevel)
 
 
 ---- SUBSCRIPTIONS
