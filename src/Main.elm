@@ -21,9 +21,6 @@ import Task
 
 -}
 
-
-
-
 ---- MODEL ----
 
 type alias Model =
@@ -45,7 +42,7 @@ randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int 0 xRandomMaximum)
     (Random.int 0 startingTimeRandomMax)
-    (Random.int 4 (maxDurationOfLevel // 1000))
+    (Random.int 4 ((maxDurationOfLevel // 1000)))
 
 hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
@@ -99,11 +96,15 @@ update msg model =
                                                         {smartRectangle | zapped = True}
                                                      else 
                                                         smartRectangle
+                areAllZapped rectangle = rectangle.zapped                                                       
                     
             in
-            ( List.map updateZappedElement model, Cmd.none )
+            if List.all (areAllZapped) model then
+                update EndLevel
+            else
+                ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, endLevelAfterTimePeriodEnds)
+            (rectangles, Cmd.none)
         EndLevel ->
             ([], Cmd.none)      
 
@@ -126,7 +127,6 @@ displayRectangle smartRectangle =
         encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration
     else
         Svg.text ""
-
 
 boxHeight : Int
 boxHeight = 100
@@ -154,15 +154,12 @@ encompassedRectangle xPosition startingTime id duration =
 maxDurationOfLevel : Int
 maxDurationOfLevel = 10000
 
-
 ---- SUBSCRIPTIONS
-
 
 subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
   -- Time.every 1000 InitialiseRectangle
-
 
 ---- PROGRAM ----
 
