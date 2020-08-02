@@ -24,12 +24,14 @@ import Task
 ---- MODEL ----
 
 type alias Model =
-     List SmartRectangle
+     { boxes : List SmartRectangle
+     , level : Int 
+     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( [ ], Random.generate GenerateRandomRectangles initialRectangles )
+    ( {boxes = [ ], level = 1}, Random.generate GenerateRandomRectangles (initialRectangles 0))
 
 startingTimeRandomMax : Int
 startingTimeRandomMax = 6
@@ -48,14 +50,14 @@ hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
     False 
 
-initialRectangles : Random.Generator (List SmartRectangle)
-initialRectangles =
-    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+initialRectangles : Int -> Random.Generator (List SmartRectangle)
+initialRectangles endingNumber =
+    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
 generateRectangle model = 
-    randomRectangle |> Random.map (\rectangelWithoutId -> convertToRectangleWithId (List.length model) rectangelWithoutId)
+    randomRectangle |> Random.map (\rectangelWithoutId -> convertToRectangleWithId (List.length model.boxes) rectangelWithoutId)
 
 
 convertToRectangleWithId : Int -> RectangleWithoutId -> SmartRectangle
@@ -99,18 +101,18 @@ update msg model =
 
                 areAllZapped rectangle = rectangle.zapped == True
             in
-            if List.all (areAllZapped) (List.map updateZappedElement model) then
-                clearLevel
+            if List.all (areAllZapped) (List.map updateZappedElement model.boxes) then
+                clearLevel (List.length(model.boxes)) model   
             else
-                ( List.map updateZappedElement model, Cmd.none )
+                ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, Cmd.none)
+            ({model | boxes = rectangles}, Cmd.none)
         EndLevel ->
-            clearLevel     
+            clearLevel (List.length(model.boxes)) model   
 
 
-clearLevel : (Model, Cmd Msg)
-clearLevel = ([], Cmd.none) 
+clearLevel : Int -> Model -> (Model, Cmd Msg)
+clearLevel endingNumber model = ({boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
 ---- VIEW ----
 
 view : Model -> Html Msg
@@ -121,7 +123,7 @@ view model =
             , height "700"
             , viewBox "0 0 800 700"
             ]
-            (List.map displayRectangle model)
+            (List.map displayRectangle model.boxes)
         ]
 
 displayRectangle : SmartRectangle -> Svg Msg
