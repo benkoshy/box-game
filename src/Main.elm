@@ -105,7 +105,7 @@ update msg model =
             in
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, sleep2Seconds)
+            (rectangles, Cmd.none)
         GenerateRandomRectangle rectangle ->
             ((model ++ [rectangle]), Cmd.none)
         InitialiseRectangle time ->
@@ -157,10 +157,13 @@ encompassedRectangle xPosition startingTime id duration =
                 [ animationFactor
                 ]        
 
+endTime : Int
+endTime = 800
+
 ---- End Level at this time
-sleep2Seconds : Cmd Msg
-sleep2Seconds =
-    Process.sleep 2000
+endLevelAfterTimePeriodEnds : Cmd Msg
+endLevelAfterTimePeriodEnds =
+    Process.sleep (toFloat endTime)
         |> Task.perform (\_ -> EndLevel)
 
 
