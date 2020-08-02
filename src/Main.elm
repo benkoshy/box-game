@@ -18,20 +18,20 @@ import Task
     more boxes more level.
     faster speeds
     longer time periods per levels.
-
 -}
 
 ---- MODEL ----
 
 type alias Model =
      { boxes : List SmartRectangle
-     , level : Int 
+     , level : Int
+     , timer : Int
      }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {boxes = [ ], level = 1}, Random.generate GenerateRandomRectangles (initialRectangles 0))
+    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
 
 startingTimeRandomMax : Int
 startingTimeRandomMax = 6
@@ -87,6 +87,7 @@ type Msg
     = Zap Int
     | GenerateRandomRectangles (List SmartRectangle)
     | EndLevel
+    | Tick Time.Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -108,11 +109,13 @@ update msg model =
         GenerateRandomRectangles rectangles ->
             ({model | boxes = rectangles}, Cmd.none)
         EndLevel ->
-            clearLevel (List.length(model.boxes)) model   
+            clearLevel (List.length(model.boxes)) model
+        Tick newTime ->
+            ( { model | timer = model.timer + 1 }, Cmd.none)
 
 
 clearLevel : Int -> Model -> (Model, Cmd Msg)
-clearLevel endingNumber model = ({boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
+clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
 ---- VIEW ----
 
 view : Model -> Html Msg
@@ -169,9 +172,7 @@ maxDurationOfLevel = 10000
 ---- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
-
-  -- Time.every 1000 InitialiseRectangle
+subscriptions model = Time.every 1000 Tick 
 
 ---- PROGRAM ----
 
