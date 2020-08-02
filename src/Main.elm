@@ -40,7 +40,7 @@ xRandomMaximum = 800 - rectangleWidth
 randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
-    (Random.int 0 xRandomMaximum)
+    (Random.int rectangleWidth xRandomMaximum)
     (Random.int 0 startingTimeRandomMax)
     (Random.int 4 ((maxDurationOfLevel // 1000)))
 
@@ -96,7 +96,7 @@ update msg model =
                                                         {smartRectangle | zapped = True}
                                                      else 
                                                         smartRectangle
-                areAllZapped rectangle = rectangle.zapped                                                       
+                areAllZapped rectangle = rectangle.zapped == True                                                     
                     
             in
             if List.all (areAllZapped) (List.map updateZappedElement model) then
