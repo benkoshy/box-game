@@ -123,13 +123,13 @@ view model =
             , height "700"
             , viewBox "0 0 800 700"
             ]
-            (List.map displayRectangle model.boxes)
+            (List.map (displayRectangle model) model.boxes )
         ]
 
-displayRectangle : SmartRectangle -> Svg Msg
-displayRectangle smartRectangle =
+displayRectangle : Model -> SmartRectangle -> Svg Msg
+displayRectangle model smartRectangle  =
     if smartRectangle.zapped == False then
-        encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration
+        encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration model.level
     else
         Svg.text ""
 
@@ -142,10 +142,14 @@ rectangleHeight = 100
 startingBoxPosition : Int
 startingBoxPosition = 0 - rectangleHeight
 
-encompassedRectangle : Int -> Int -> Int -> Int -> Svg Msg
-encompassedRectangle xPosition startingTime id duration =
+encompassedRectangle : Int -> Int -> Int -> Int -> Int -> Svg Msg
+encompassedRectangle xPosition startingTime id duration level =
     let     
-        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
+        
+            animationFactor = if (level == 1) then
+                                    animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt( startingTime )), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
+                              else
+                                    animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt( startingTime + level * 10)), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
     in  
         rect
                 [ width (String.fromInt rectangleWidth)
