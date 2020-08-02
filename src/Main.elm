@@ -45,7 +45,7 @@ randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int 0 xRandomMaximum)
     (Random.int 0 startingTimeRandomMax)
-    (Random.int 4 10)
+    (Random.int 4 (maxDurationOfLevel // 1000))
 
 hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
@@ -103,7 +103,7 @@ update msg model =
             in
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            (rectangles, Cmd.none)
+            (rectangles, endLevelAfterTimePeriodEnds)
         EndLevel ->
             ([], Cmd.none)      
 
@@ -151,14 +151,8 @@ encompassedRectangle xPosition startingTime id duration =
                 [ animationFactor
                 ]        
 
-endTime : Int
-endTime = 800
-
----- End Level at this time
-endLevelAfterTimePeriodEnds : Cmd Msg
-endLevelAfterTimePeriodEnds =
-    Process.sleep (toFloat endTime)
-        |> Task.perform (\_ -> EndLevel)
+maxDurationOfLevel : Int
+maxDurationOfLevel = 10000
 
 
 ---- SUBSCRIPTIONS
