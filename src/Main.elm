@@ -87,8 +87,6 @@ type alias SmartRectangle =
 type Msg
     = Zap Int
     | GenerateRandomRectangles (List SmartRectangle)
-    | InitialiseRectangle Time.Posix
-    | GenerateRandomRectangle SmartRectangle
     | EndLevel
 
 
@@ -106,10 +104,6 @@ update msg model =
             ( List.map updateZappedElement model, Cmd.none )
         GenerateRandomRectangles rectangles ->
             (rectangles, Cmd.none)
-        GenerateRandomRectangle rectangle ->
-            ((model ++ [rectangle]), Cmd.none)
-        InitialiseRectangle time ->
-            (model, Random.generate GenerateRandomRectangle (generateRectangle model)) 
         EndLevel ->
             ([], Cmd.none)      
 
