@@ -31,7 +31,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
+    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0 0))
 
 startingTimeRandomMax : Int
 startingTimeRandomMax = 6
@@ -50,9 +50,9 @@ hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
     False 
 
-initialRectangles : Int -> Random.Generator (List SmartRectangle)
-initialRectangles endingNumber =
-    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+initialRectangles : Int -> Int -> Random.Generator (List SmartRectangle)
+initialRectangles endingNumber currentTime =
+    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime + currentTime , duration = x.duration}))
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
@@ -115,7 +115,7 @@ update msg model =
 
 
 clearLevel : Int -> Model -> (Model, Cmd Msg)
-clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
+clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber model.timer)) 
 ---- VIEW ----
 
 view : Model -> Html Msg
@@ -143,16 +143,12 @@ rectangleHeight : Int
 rectangleHeight = 100
 
 startingBoxPosition : Int
-startingBoxPosition = 0 - rectangleHeight
+startingBoxPosition = -100 - rectangleHeight
 
 encompassedRectangle : Int -> Int -> Int -> Int -> Model -> Svg Msg
 encompassedRectangle xPosition startingTime id duration model =
     let     
-        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin "0", dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] [] 
-           {- animationFactor = if (model.level == 1) then
-                                    animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt( startingTime )), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    
-                              else
-                                    animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt( startingTime + model.timer)), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] []    -}
+        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] [] 
     in  
         rect
                 [ width (String.fromInt rectangleWidth)
