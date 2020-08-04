@@ -31,7 +31,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0 0))
+    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
 
 startingTimeRandomMax : Int
 startingTimeRandomMax = 6
@@ -50,9 +50,21 @@ hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
     False 
 
-initialRectangles : Int -> Int -> Random.Generator (List SmartRectangle)
-initialRectangles endingNumber currentTime =
-    Random.list 10 randomRectangle |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime + currentTime , duration = x.duration}))
+initialRectangles : Int -> Random.Generator (List SmartRectangle)
+initialRectangles endingNumber =
+    Random.list 4 randomRectangle 
+    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+
+--- we want to batch it in groups of 10
+--- current time: 1,2,3,4,5,6,3,2,3,5.................then another group: 15, 15, 13, 16, 17
+
+{-
+
+List.range 0 10
+|> List.map initialRectangles
+|> List.concat 
+
+-}
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
@@ -115,7 +127,7 @@ update msg model =
 
 
 clearLevel : Int -> Model -> (Model, Cmd Msg)
-clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber model.timer)) 
+clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
 ---- VIEW ----
 
 view : Model -> Html Msg
@@ -168,7 +180,8 @@ maxDurationOfLevel = 10000
 ---- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
-subscriptions model = Time.every 1000 Tick 
+subscriptions model = 
+        Time.every 1000 Tick 
 
 ---- PROGRAM ----
 
