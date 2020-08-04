@@ -33,6 +33,16 @@ init : ( Model, Cmd Msg )
 init =
     ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
 
+
+{-
+
+List.range 0 10
+|> List.map initialRectangles
+|> List.concat 
+
+-}
+
+
 startingTimeRandomMax : Int
 startingTimeRandomMax = 6
 
@@ -52,19 +62,13 @@ hasCrossedTheFinishLine rectange =
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
 initialRectangles endingNumber =
-    Random.list 4 randomRectangle 
-    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+    Random.list 2 randomRectangle 
+    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime + (endingNumber * 10 + 1), duration = x.duration}))
 
 --- we want to batch it in groups of 10
 --- current time: 1,2,3,4,5,6,3,2,3,5.................then another group: 15, 15, 13, 16, 17
 
-{-
 
-List.range 0 10
-|> List.map initialRectangles
-|> List.concat 
-
--}
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
@@ -115,19 +119,20 @@ update msg model =
                 areAllZapped rectangle = rectangle.zapped == True
             in
             if List.all (areAllZapped) (List.map updateZappedElement model.boxes) then
-                clearLevel (List.length(model.boxes)) model   
+                ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
             else
                 ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
         GenerateRandomRectangles rectangles ->
             ({model | boxes = rectangles}, Cmd.none)
         EndLevel ->
-            clearLevel (List.length(model.boxes)) model
+            (model, Cmd.none) 
         Tick newTime ->
             ( { model | timer = model.timer + 1 }, Cmd.none)
 
 
-clearLevel : Int -> Model -> (Model, Cmd Msg)
-clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
+
+-- clearLevel : Int -> Model -> (Model, Cmd Msg)
+-- clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
 ---- VIEW ----
 
 view : Model -> Html Msg
