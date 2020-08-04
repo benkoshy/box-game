@@ -39,7 +39,6 @@ init =
 List.range 0 10
 |> List.map initialRectangles
 |> List.concat 
-
 -}
 
 
@@ -62,7 +61,7 @@ hasCrossedTheFinishLine rectange =
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
 initialRectangles endingNumber =
-    Random.list 2 randomRectangle 
+    Random.list 5 randomRectangle 
     |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime + (endingNumber * 10 + 1), duration = x.duration}))
 
 --- we want to batch it in groups of 10
@@ -119,7 +118,7 @@ update msg model =
                 areAllZapped rectangle = rectangle.zapped == True
             in
             if List.all (areAllZapped) (List.map updateZappedElement model.boxes) then
-                ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
+                ( {model | boxes = []}, Cmd.none )
             else
                 ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
         GenerateRandomRectangles rectangles ->
@@ -131,9 +130,9 @@ update msg model =
 
 
 
--- clearLevel : Int -> Model -> (Model, Cmd Msg)
--- clearLevel endingNumber model = ({model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber)) 
----- VIEW ----
+clearLevel : Int -> Model -> (Model, Cmd Msg)
+clearLevel endingNumber model = ( {model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber))
+
 
 view : Model -> Html Msg
 view model =        
