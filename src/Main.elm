@@ -34,16 +34,11 @@ init =
     ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
 
 
-{-
-
-List.range 0 10
-|> List.map initialRectangles
-|> List.concat 
--}
-
+totalBoxes : Int
+totalBoxes = 500
 
 startingTimeRandomMax : Int
-startingTimeRandomMax = 6
+startingTimeRandomMax = totalBoxes
 
 xRandomMaximum : Int
 xRandomMaximum = 800 - rectangleWidth
@@ -60,9 +55,16 @@ hasCrossedTheFinishLine rectange =
     False 
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
-initialRectangles endingNumber =
-    Random.list 5 randomRectangle 
-    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime + (endingNumber * 10 + 1), duration = x.duration}))
+initialRectangles endingNumber =  
+    Random.list totalBoxes randomRectangle 
+    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+
+{-
+List.range 0 10
+|> List.map initialRectangles
+|> List.concat 
+-}
+-- 11 12 13
 
 --- we want to batch it in groups of 10
 --- current time: 1,2,3,4,5,6,3,2,3,5.................then another group: 15, 15, 13, 16, 17
@@ -127,7 +129,6 @@ update msg model =
             (model, Cmd.none) 
         Tick newTime ->
             ( { model | timer = model.timer + 1 }, Cmd.none)
-
 
 
 clearLevel : Int -> Model -> (Model, Cmd Msg)
