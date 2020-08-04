@@ -46,9 +46,9 @@ xRandomMaximum = 800 - rectangleWidth
 randomRectangle : Random.Generator RectangleWithoutId
 randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
-    (Random.int rectangleWidth xRandomMaximum)
-    (Random.int 0 startingTimeRandomMax)
-    (Random.int 4 ((maxDurationOfLevel // 1000)))
+    (Random.int rectangleWidth xRandomMaximum) -- x position
+    (Random.int 0 startingTimeRandomMax)       -- starting time
+    (Random.int 4 ((maxDurationOfLevel // 1000))) -- duration
 
 hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
