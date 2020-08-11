@@ -6,12 +6,14 @@ import Html.Attributes exposing (src)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Svg.Events exposing (onClick)
+import Svg.Events exposing (onClick, on)
 
 import Random
 import Time
 import Process
 import Task
+
+import Json.Decode as Decode
 
 ---- Parameterise the levels.
 {-
@@ -102,6 +104,7 @@ type alias SmartRectangle =
 
 type Msg
     = Zap Int
+    | Die Int
     | GenerateRandomRectangles (List SmartRectangle)
     | EndLevel
     | Tick Time.Posix
@@ -129,6 +132,8 @@ update msg model =
             (model, Cmd.none) 
         Tick newTime ->
             ( { model | timer = model.timer + 1 }, Cmd.none)
+        Die indexNo ->
+            (model, Cmd.none)
 
 
 clearLevel : Int -> Model -> (Model, Cmd Msg)
@@ -165,7 +170,7 @@ startingBoxPosition = -100 - rectangleHeight
 encompassedRectangle : Int -> Int -> Int -> Int -> Model -> Svg Msg
 encompassedRectangle xPosition startingTime id duration model =
     let     
-        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y"] [] 
+        animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y", onEnd (Die id)] [] 
     in  
         rect
                 [ width (String.fromInt rectangleWidth)
@@ -181,6 +186,12 @@ encompassedRectangle xPosition startingTime id duration model =
 
 maxDurationOfLevel : Int
 maxDurationOfLevel = 10000
+
+
+---- EVENTS
+onEnd : msg -> Attribute msg
+onEnd message =
+  on "end" (Decode.succeed message)
 
 ---- SUBSCRIPTIONS
 
