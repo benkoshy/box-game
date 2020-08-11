@@ -154,7 +154,8 @@ view model =
 displayRectangle : Model -> SmartRectangle -> Svg Msg
 displayRectangle model smartRectangle  =
     if smartRectangle.zapped == False then
-        encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration model
+        svg [] [  encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration model
+               ]
     else
         Svg.text ""
 
@@ -172,7 +173,8 @@ encompassedRectangle xPosition startingTime id duration model =
     let     
         animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y", onEnd (Die id)] [] 
     in  
-        rect
+        svg []
+            [ rect
                 [ width (String.fromInt rectangleWidth)
                 , height (String.fromInt rectangleHeight)
                 , fill "dodgerblue"
@@ -181,8 +183,10 @@ encompassedRectangle xPosition startingTime id duration model =
                 , y (String.fromInt startingBoxPosition)
                 , rx "15", ry "15"
                 ]
-                [ animationFactor
-                ]        
+                [ animationFactor ]
+            , text_ [] [Svg.text (String.fromInt id), animationFactor]  
+            ]
+      
 
 maxDurationOfLevel : Int
 maxDurationOfLevel = 10000
