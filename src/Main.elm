@@ -37,7 +37,7 @@ init =
 
 
 totalBoxes : Int
-totalBoxes = 500
+totalBoxes = 10
 
 startingTimeRandomMax : Int
 startingTimeRandomMax = totalBoxes
@@ -50,7 +50,7 @@ randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (Random.int 0 startingTimeRandomMax)       -- starting time
-    (Random.int 4 ((maxDurationOfLevel // 1000))) -- duration
+    (Random.int 4 ((maxDurationOfLevel))) -- duration
 
 hasCrossedTheFinishLine : SmartRectangle -> Bool
 hasCrossedTheFinishLine rectange = 
@@ -189,7 +189,7 @@ encompassedRectangle xPosition startingTime id duration model =
       
 
 maxDurationOfLevel : Int
-maxDurationOfLevel = 10000
+maxDurationOfLevel = 10
 
 
 ---- EVENTS
