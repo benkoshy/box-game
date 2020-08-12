@@ -202,8 +202,8 @@ onEnd message =
 ---- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
-subscriptions model = 
-        Time.every 1000 Tick 
+subscriptions model = Sub.none
+        -- Time.every 1000 Tick 
 
 ---- PROGRAM ----
 
