@@ -51,7 +51,7 @@ randomRectangle = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (Random.int 0 startingTimeRandomMax)       -- starting time
-    (Random.int 4 ((maxDurationOfLevel))) -- duration
+    (Random.int 4 ((maxDuration))) -- duration
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
 initialRectangles endingNumber =  
@@ -67,8 +67,6 @@ List.range 0 10
 
 --- we want to batch it in groups of 10
 --- current time: 1,2,3,4,5,6,3,2,3,5.................then another group: 15, 15, 13, 16, 17
-
-
 
 --  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
 generateRectangle : Model -> Random.Generator SmartRectangle
@@ -185,8 +183,8 @@ encompassedRectangle xPosition startingTime id duration model =
             ]
       
 
-maxDurationOfLevel : Int
-maxDurationOfLevel = 10
+maxDuration : Int
+maxDuration = 10
 
 
 ---- EVENTS
