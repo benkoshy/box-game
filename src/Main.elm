@@ -26,7 +26,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles 0))
+    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles))
 
 
 totalBoxes : Int
@@ -60,10 +60,10 @@ randomRectangle = Random.map3
 
 
 
-initialRectangles : Int -> Random.Generator (List SmartRectangle)
-initialRectangles endingNumber =  
+initialRectangles : Random.Generator (List SmartRectangle)
+initialRectangles =  
     Random.list totalBoxes randomRectangle 
-    |> Random.map (List.indexedMap (\i x -> {id = i + endingNumber, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+    |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
 
 {-
 List.range 0 10
@@ -138,8 +138,8 @@ update msg model =
             (model, Cmd.none)
 
 
-clearLevel : Int -> Model -> (Model, Cmd Msg)
-clearLevel endingNumber model = ( {model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles endingNumber))
+clearLevel : Model -> (Model, Cmd Msg)
+clearLevel model = ( {model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles))
 
 
 view : Model -> Html Msg
