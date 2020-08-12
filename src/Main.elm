@@ -15,14 +15,6 @@ import Task
 
 import Json.Decode as Decode
 
----- Parameterise the levels.
-{-
-    more boxes more level.
-    faster speeds
-    longer time periods per levels.
--}
-
-
 ---- MODEL ----
 
 type alias Model =
@@ -52,6 +44,21 @@ randomRectangle = Random.map3
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (Random.int 0 startingTimeRandomMax)       -- starting time
     (Random.int 4 ((maxDuration))) -- duration
+
+
+---- Parameterise the levels.
+{-
+    more boxes more level.
+    faster speeds
+    longer time periods per levels.
+
+-- We need to parameterise the level.
+-- let's get the ID in there!
+
+-}
+
+
+
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
 initialRectangles endingNumber =  
