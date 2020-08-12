@@ -22,6 +22,7 @@ import Json.Decode as Decode
     longer time periods per levels.
 -}
 
+
 ---- MODEL ----
 
 type alias Model =
@@ -51,10 +52,6 @@ randomRectangle = Random.map3
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (Random.int 0 startingTimeRandomMax)       -- starting time
     (Random.int 4 ((maxDurationOfLevel))) -- duration
-
-hasCrossedTheFinishLine : SmartRectangle -> Bool
-hasCrossedTheFinishLine rectange = 
-    False 
 
 initialRectangles : Int -> Random.Generator (List SmartRectangle)
 initialRectangles endingNumber =  
