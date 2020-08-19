@@ -26,7 +26,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( {boxes = [ ], level = 1, timer = 0}, Random.generate GenerateRandomRectangles (initialRectangles))
+    ( {boxes = [ ], level = 1, timer = 0}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level))))
 
 
 totalBoxes : Int
@@ -55,9 +55,66 @@ randomRectangle = Random.map3
 -- We need to parameterise the level.
 -- let's get the ID in there!
 
+
+
+level 1 - 10 squares over 10 seconds
+
+2 second gap
+
+level 2 - 15 squares over 10 seconds
+
+2 second gap
+
+level 3 - 20 squares over 10 seconds
+
+2 second gap
+
+--- all of this must be initialised from the beginning
+
+initialRectangles : Random.Generator (List SmartRectangle) -- this is the final outcome
+
+    10 levels
+
+
+    input level --> output a different List of rectangles.
+
+
+    List.range 1 10 
+
+    List.range 1 10 |> List.map (\x -> levelListGenerator x) |> List.indexedMap (\id r -> )
+
 -}
 
+levelListGenerator : Int -> Random.Generator (List SmartRectangle)
+levelListGenerator level = 
+    let
+        multiplicationFactor = 5 
 
+        finalId id = id + previousListTotal
+
+        listTotal level_parameter =  10 + level_parameter  * multiplicationFactor            
+
+        previousListTotal = if level == 1 then
+                              1
+                            else 
+                                listTotal (level - 1)
+    in
+        
+    Random.list (listTotal level) (randomSmarterRectangle level) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+                            
+                                                            
+
+randomSmarterRectangle : Int -> Random.Generator RectangleWithoutId
+randomSmarterRectangle level = Random.map3
+    (\x y z -> RectangleWithoutId False x y z)
+    (Random.int rectangleWidth xRandomMaximum) -- x position
+    (startTimeByLevel level)       -- starting time
+    (Random.int 4 ((maxDuration))) -- duration
+
+
+startTimeByLevel : Int -> Random.Generator Int
+startTimeByLevel level =
+    Random.map (\r -> r + (level - 1)* 10) (Random.int 0 8)
 
 
 initialRectangles : Random.Generator (List SmartRectangle)
@@ -129,17 +186,13 @@ update msg model =
             else
                 ( {model | boxes = List.map updateZappedElement model.boxes}, Cmd.none )
         GenerateRandomRectangles rectangles ->
-            ({model | boxes = rectangles}, Cmd.none)
+            ({model | boxes = model.boxes ++ rectangles}, Cmd.none)
         EndLevel ->
             (model, Cmd.none) 
         Tick newTime ->
             ( { model | timer = model.timer + 1 }, Cmd.none)
         Die indexNo ->
             (model, Cmd.none)
-
-
-clearLevel : Model -> (Model, Cmd Msg)
-clearLevel model = ( {model | boxes = [], level = model.level + 1}, Random.generate GenerateRandomRectangles (initialRectangles))
 
 
 view : Model -> Html Msg
