@@ -46,45 +46,6 @@ randomRectangle = Random.map3
     (Random.int 4 ((maxDuration))) -- duration
 
 
----- Parameterise the levels.
-{-
-    more boxes more level.
-    faster speeds
-    longer time periods per levels.
-
--- We need to parameterise the level.
--- let's get the ID in there!
-
-
-
-level 1 - 10 squares over 10 seconds
-
-2 second gap
-
-level 2 - 15 squares over 10 seconds
-
-2 second gap
-
-level 3 - 20 squares over 10 seconds
-
-2 second gap
-
---- all of this must be initialised from the beginning
-
-initialRectangles : Random.Generator (List SmartRectangle) -- this is the final outcome
-
-    10 levels
-
-
-    input level --> output a different List of rectangles.
-
-
-    List.range 1 10 
-
-    List.range 1 10 |> List.map (\x -> levelListGenerator x) |> List.indexedMap (\id r -> )
-
--}
-
 levelListGenerator : Int -> Random.Generator (List SmartRectangle)
 levelListGenerator level = 
     let
