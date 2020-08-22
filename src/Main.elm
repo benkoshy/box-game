@@ -55,12 +55,31 @@ randomSmarterRectangle level = Random.map3
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (startTimeByLevel level)       -- starting time
-    (Random.int 4 ((maxDuration))) -- duration
+    (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
 
 
 startTimeByLevel : Int -> Random.Generator Int
 startTimeByLevel level =
-    Random.map (\r -> r + (level - 1)* 10) (Random.int 0 8)
+    Random.map (\r -> r + (level - 1)* 13) (Random.int 0 8)
+
+minimumDurationByLevel : Int -> Int
+minimumDurationByLevel level =
+    if level == 1 then
+       7
+    else if level == 2 then
+       6
+    else if level == 3 then 
+       5
+    else if level == 4 then
+       4 
+    else
+       3
+
+
+
+maxDurationByLevel : Int
+maxDurationByLevel = 10
+  
 
 
 type alias RectangleWithoutId = 
@@ -162,10 +181,6 @@ encompassedRectangle xPosition startingTime id duration model =
             , text_ [] [Svg.text (String.fromInt id), animationFactor]  
             ]
       
-
-maxDuration : Int
-maxDuration = 10
-
 
 ---- EVENTS
 onEnd : msg -> Attribute msg
