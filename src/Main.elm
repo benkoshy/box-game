@@ -152,7 +152,11 @@ view model =
             , height (String.fromInt model.windowHeight)
             , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
-            (List.map (displayRectangle model) model.boxes )
+            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) ))]] )
+            -- ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) 
+            -- (List.map (displayRectangle model) model.boxes )  
+            -- [ Svg.text_ [ height =  String.fromInt (model.windowHeight - 10), width = String.fromInt (model.windowHeight - 10) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  )   ))]]
+            -- 
         ]
 
 displayRectangle : Model -> SmartRectangle -> Svg Msg
@@ -187,8 +191,7 @@ encompassedRectangle xPosition startingTime id duration color model =
                 , y (String.fromInt startingBoxPosition)
                 , rx "15", ry "15"
                 ]
-                [ animationFactor ]
-            , text_ [] [Svg.text (String.fromInt id), animationFactor]  
+                [ animationFactor ] 
             ]
       
 
