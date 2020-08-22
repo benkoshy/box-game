@@ -39,23 +39,24 @@ levelListGenerator level =
 
         finalId id = id + previousListTotal
 
-        listTotal level_parameter =  10 + level_parameter  * multiplicationFactor            
+        listTotal level_parameter =  5 + level_parameter  * multiplicationFactor            
 
         previousListTotal = if level == 1 then
                               1
                             else 
                                 listTotal (level - 1)
     in        
-    Random.list (listTotal level) (randomSmarterRectangle level) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
+    Random.list (listTotal level) (randomSmarterRectangle level) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration, color = x.color}))
                             
                                                             
 
 randomSmarterRectangle : Int -> Random.Generator RectangleWithoutId
-randomSmarterRectangle level = Random.map3
+randomSmarterRectangle level = Random.map4
     (\x y z -> RectangleWithoutId False x y z)
     (Random.int rectangleWidth xRandomMaximum) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
+    ( Random.uniform "black" ["burlywood", "aliceblue", "deeppink", "greenyellow", "orangered"]    ) -- color
 
 
 startTimeByLevel : Int -> Random.Generator Int
@@ -88,6 +89,7 @@ type alias RectangleWithoutId =
   , xPosition : Int 
   , startingTime : Int
   , duration : Int
+  , color : String
  }
 
 type alias SmartRectangle = 
@@ -96,6 +98,7 @@ type alias SmartRectangle =
   , xPosition : Int 
   , startingTime : Int
   , duration : Int
+  , color : String
   }
 
 ---- UPDATE ----
@@ -148,7 +151,7 @@ view model =
 displayRectangle : Model -> SmartRectangle -> Svg Msg
 displayRectangle model smartRectangle  =
     if smartRectangle.zapped == False then
-        svg [] [  encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration model
+        svg [] [  encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration smartRectangle.color model
                ]
     else
         Svg.text ""
@@ -162,8 +165,8 @@ rectangleHeight = 100
 startingBoxPosition : Int
 startingBoxPosition = -100 - rectangleHeight
 
-encompassedRectangle : Int -> Int -> Int -> Int -> Model -> Svg Msg
-encompassedRectangle xPosition startingTime id duration model =
+encompassedRectangle : Int -> Int -> Int -> Int -> String -> Model -> Svg Msg
+encompassedRectangle xPosition startingTime id duration color model =
     let     
         animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y", onEnd (Die id)] [] 
     in  
@@ -171,7 +174,7 @@ encompassedRectangle xPosition startingTime id duration model =
             [ rect
                 [ width (String.fromInt rectangleWidth)
                 , height (String.fromInt rectangleHeight)
-                , fill "dodgerblue"
+                , fill (color)
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
                 , y (String.fromInt startingBoxPosition)
