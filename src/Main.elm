@@ -33,14 +33,14 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( {boxes = [ ], level = 1, timer = 0, windowWidth = flags.windowWidth, windowHeight = flags.windowHeight}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level))))
+    ( {boxes = [ ], level = 1, timer = 0, windowWidth = flags.windowWidth, windowHeight = flags.windowHeight}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level flags.windowWidth))))
 
 
-xRandomMaximum : Int
-xRandomMaximum = 800 - rectangleWidth
+xRandomMaximum : Int -> Int
+xRandomMaximum windowWidth = windowWidth - rectangleWidth
 
-levelListGenerator : Int -> Random.Generator (List SmartRectangle)
-levelListGenerator level = 
+levelListGenerator : Int -> Int -> Random.Generator (List SmartRectangle)
+levelListGenerator level windowWidth = 
     let
         multiplicationFactor = 5 
 
@@ -53,14 +53,14 @@ levelListGenerator level =
                             else 
                                 listTotal (level - 1)
     in        
-    Random.list (listTotal level) (randomSmarterRectangle level) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration, color = x.color}))
+    Random.list (listTotal level) (randomSmarterRectangle level windowWidth) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration, color = x.color}))
                             
                                                             
 
-randomSmarterRectangle : Int -> Random.Generator RectangleWithoutId
-randomSmarterRectangle level = Random.map4
+randomSmarterRectangle : Int -> Int ->  Random.Generator RectangleWithoutId
+randomSmarterRectangle level windowWidth = Random.map4
     (\x y z -> RectangleWithoutId False x y z)
-    (Random.int rectangleWidth xRandomMaximum) -- x position
+    (Random.int rectangleWidth (xRandomMaximum windowWidth)) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
     ( Random.uniform "black" ["burlywood", "aliceblue", "deeppink", "greenyellow", "orangered"]    ) -- color
@@ -148,9 +148,9 @@ view : Model -> Html Msg
 view model =        
     div []
         [   svg
-            [ width "800"
-            , height "700"
-            , viewBox "0 0 800 700"
+            [ width (String.fromInt model.windowWidth)
+            , height (String.fromInt model.windowHeight)
+            , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
             (List.map (displayRectangle model) model.boxes )
         ]
