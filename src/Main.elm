@@ -29,22 +29,8 @@ init =
     ( {boxes = [ ], level = 1, timer = 0}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level))))
 
 
-totalBoxes : Int
-totalBoxes = 10
-
-startingTimeRandomMax : Int
-startingTimeRandomMax = totalBoxes
-
 xRandomMaximum : Int
 xRandomMaximum = 800 - rectangleWidth
-
-randomRectangle : Random.Generator RectangleWithoutId
-randomRectangle = Random.map3
-    (\x y z -> RectangleWithoutId False x y z)
-    (Random.int rectangleWidth xRandomMaximum) -- x position
-    (Random.int 0 startingTimeRandomMax)       -- starting time
-    (Random.int 4 ((maxDuration))) -- duration
-
 
 levelListGenerator : Int -> Random.Generator (List SmartRectangle)
 levelListGenerator level = 
@@ -59,8 +45,7 @@ levelListGenerator level =
                               1
                             else 
                                 listTotal (level - 1)
-    in
-        
+    in        
     Random.list (listTotal level) (randomSmarterRectangle level) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
                             
                                                             
@@ -76,32 +61,6 @@ randomSmarterRectangle level = Random.map3
 startTimeByLevel : Int -> Random.Generator Int
 startTimeByLevel level =
     Random.map (\r -> r + (level - 1)* 10) (Random.int 0 8)
-
-
-initialRectangles : Random.Generator (List SmartRectangle)
-initialRectangles =  
-    Random.list totalBoxes randomRectangle 
-    |> Random.map (List.indexedMap (\i x -> {id = i, zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration}))
-
-{-
-List.range 0 10
-|> List.map initialRectangles
-|> List.concat 
--}
--- 11 12 13
-
---- we want to batch it in groups of 10
---- current time: 1,2,3,4,5,6,3,2,3,5.................then another group: 15, 15, 13, 16, 17
-
---  Random.map (List.indexedMap (\id x -> {x | id = id}) ) (Random.list 10 randomRectangle)
-generateRectangle : Model -> Random.Generator SmartRectangle
-generateRectangle model = 
-    randomRectangle |> Random.map (\rectangelWithoutId -> convertToRectangleWithId (List.length model.boxes) rectangelWithoutId)
-
-
-convertToRectangleWithId : Int -> RectangleWithoutId -> SmartRectangle
-convertToRectangleWithId id rectangelWithoutId =
-    SmartRectangle id rectangelWithoutId.zapped rectangelWithoutId.xPosition rectangelWithoutId.startingTime rectangelWithoutId.duration
 
 
 type alias RectangleWithoutId = 
