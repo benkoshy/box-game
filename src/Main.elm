@@ -21,12 +21,19 @@ type alias Model =
      { boxes : List SmartRectangle
      , level : Int
      , timer : Int
+     , windowHeight : Int
+     , windowWidth : Int
      }
 
+type alias Flags =
+    { windowWidth : Int
+    , windowHeight : Int
+    }
 
-init : ( Model, Cmd Msg )
-init =
-    ( {boxes = [ ], level = 1, timer = 0}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level))))
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( {boxes = [ ], level = 1, timer = 0, windowWidth = flags.windowWidth, windowHeight = flags.windowHeight}, Cmd.batch (List.range 1 10 |> List.map (\level -> Random.generate GenerateRandomRectangles (levelListGenerator level))))
 
 
 xRandomMaximum : Int
@@ -198,12 +205,11 @@ subscriptions model = Sub.none
 
 ---- PROGRAM ----
 
-
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     Browser.element
         { view = view
-        , init = \_ -> init
+        , init = init
         , update = update
         , subscriptions = subscriptions
     }
