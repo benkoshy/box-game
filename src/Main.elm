@@ -37,7 +37,7 @@ init flags =
 
 
 xRandomMaximum : Int -> Int
-xRandomMaximum windowWidth = windowWidth - rectangleWidth
+xRandomMaximum windowWidth = windowWidth - (rectangleWidth windowWidth)
 
 levelListGenerator : Int -> Int -> Random.Generator (List SmartRectangle)
 levelListGenerator level windowWidth = 
@@ -60,7 +60,7 @@ levelListGenerator level windowWidth =
 randomSmarterRectangle : Int -> Int ->  Random.Generator RectangleWithoutId
 randomSmarterRectangle level windowWidth = Random.map4
     (\x y z -> RectangleWithoutId x y z)
-    (Random.int rectangleWidth (xRandomMaximum windowWidth)) -- x position
+    (Random.int (rectangleWidth windowWidth) (xRandomMaximum windowWidth)) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
     ( Random.uniform "black" ["yellow", "slateblue", "purple", "orange", "maroon", "lightpink", "indigo", "darkolivegreen"]    ) -- color
@@ -176,24 +176,25 @@ displayRectangle model smartRectangle  =
     else
         Svg.text ""
 
-rectangleWidth : Int
-rectangleWidth  = 100
+rectangleWidth : Int -> Int
+rectangleWidth windowWidth = 
+    if windowWidth < 400 then
+      50
+    else
+      100
 
-rectangleHeight : Int
-rectangleHeight = 100
 
-startingBoxPosition : Int
-startingBoxPosition = -100 - rectangleHeight
 
 encompassedRectangle : Int -> Int -> Int -> Int -> String -> Model -> Svg Msg
 encompassedRectangle xPosition startingTime id duration color model =
-    let     
+    let rectangleHeight  = rectangleWidth model.windowWidth
+        startingBoxPosition = -100 - (rectangleHeight)
         animationFactor = animate [ from (String.fromInt startingBoxPosition), to "800", begin (String.fromInt startingTime), dur ((String.fromInt duration) ++ "s"), repeatCount "1", attributeName "y", onEnd (Die id)] [] 
     in  
         svg []
             [ rect
-                [ width (String.fromInt rectangleWidth)
-                , height (String.fromInt rectangleHeight)
+                [ width (String.fromInt (rectangleWidth model.windowWidth))
+                , height (String.fromInt (rectangleHeight))
                 , fill (color)
                 , onClick (Zap id)
                 , x (String.fromInt xPosition)
