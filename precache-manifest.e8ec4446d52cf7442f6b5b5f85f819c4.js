@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/box-game/favicon.ico"
   },
   {
-    "revision": "b7d3f05e5d4126a8204a7e91ffc52d30",
+    "revision": "ffa9b16c301797a1f985608c13d92eda",
     "url": "/box-game/index.html"
   },
   {
