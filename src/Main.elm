@@ -156,7 +156,12 @@ update msg model =
 view : Model -> Html Msg
 view model =        
   let
-    boxList = (List.map (displayRectangle model) model.boxes )       
+    boxList = (List.map (displayRectangle model) model.boxes )      
+    missingBoxesDisplay = Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))] 
+    startXPosition = (String.fromInt (-150 + model.windowWidth // 2))
+    startYPosition = (String.fromInt (model.windowHeight // 2))
+    animationFactor = animate [ from "0", to (String.fromInt (model.windowHeight + 50)), begin ("0"), dur "3", repeatCount "1", attributeName "y"] [] 
+    initialInstructions = Svg.text_ [ x "0", y (String.fromInt (model.windowHeight + 50)), fontSize "4em"] [ Svg.text "Click on the boxes (and don't miss any)!" , animationFactor]
   in
     
     div []
@@ -165,7 +170,7 @@ view model =
             , height (String.fromInt model.windowHeight)
             , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
-            (List.append boxList  [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))]] )
+            (List.append boxList [ initialInstructions, missingBoxesDisplay ] )
         ]
 
 displayRectangle : Model -> SmartRectangle -> Svg Msg
