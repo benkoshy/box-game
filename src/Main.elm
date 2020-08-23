@@ -155,17 +155,17 @@ update msg model =
 
 view : Model -> Html Msg
 view model =        
+  let
+    boxList = (List.map (displayRectangle model) model.boxes )       
+  in
+    
     div []
         [   svg
             [ width (String.fromInt model.windowWidth)
             , height (String.fromInt model.windowHeight)
             , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
-            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))]] )
-            -- ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) 
-            -- (List.map (displayRectangle model) model.boxes )  
-            -- [ Svg.text_ [ height =  String.fromInt (model.windowHeight - 10), width = String.fromInt (model.windowHeight - 10) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  )   ))]]
-            -- 
+            (List.append boxList  [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))]] )
         ]
 
 displayRectangle : Model -> SmartRectangle -> Svg Msg
