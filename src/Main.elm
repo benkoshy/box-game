@@ -53,13 +53,13 @@ levelListGenerator level windowWidth =
                             else 
                                 listTotal (level - 1)
     in        
-    Random.list (listTotal level) (randomSmarterRectangle level windowWidth) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = x.zapped, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration, color = x.color}))
+    Random.list (listTotal level) (randomSmarterRectangle level windowWidth) |> Random.map  (List.indexedMap (\id x -> {id = ( finalId id), zapped = Born, xPosition = x.xPosition, startingTime = x.startingTime, duration = x.duration, color = x.color}))
                             
                                                             
 
 randomSmarterRectangle : Int -> Int ->  Random.Generator RectangleWithoutId
 randomSmarterRectangle level windowWidth = Random.map4
-    (\x y z -> RectangleWithoutId False x y z)
+    (\x y z -> RectangleWithoutId x y z)
     (Random.int rectangleWidth (xRandomMaximum windowWidth)) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
@@ -88,25 +88,28 @@ minimumDurationByLevel level =
 maxDurationByLevel : Int
 maxDurationByLevel = 10
   
-
-
 type alias RectangleWithoutId = 
- {
-    zapped : Bool
-  , xPosition : Int 
-  , startingTime : Int
-  , duration : Int
-  , color : String
- }
+  {
+    xPosition : Int 
+    , startingTime : Int
+    , duration : Int
+    , color : String
+  }
 
 type alias SmartRectangle = 
   { id : Int
-  , zapped : Bool
+  , zapped : LifeStage
   , xPosition : Int 
   , startingTime : Int
   , duration : Int
   , color : String
   }
+
+
+
+type LifeStage = Born
+  | Zapped
+  | Dead
 
 ---- UPDATE ----
 
@@ -124,11 +127,11 @@ update msg model =
         Zap indexNo ->
             let
                 updateZappedElement smartRectangle = if smartRectangle.id == indexNo then
-                                                        {smartRectangle | zapped = True}
+                                                        {smartRectangle | zapped = Zapped }
                                                      else 
                                                         smartRectangle
 
-                areAllZapped rectangle = rectangle.zapped == True
+                areAllZapped rectangle = rectangle.zapped == Zapped
             in
             if List.all (areAllZapped) (List.map updateZappedElement model.boxes) then
                 ( {model | boxes = []}, Cmd.none )
@@ -152,7 +155,7 @@ view model =
             , height (String.fromInt model.windowHeight)
             , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
-            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) ))]] )
+            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Zapped) model.boxes |> List.length |> String.fromInt  ) ))]] )
             -- ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) 
             -- (List.map (displayRectangle model) model.boxes )  
             -- [ Svg.text_ [ height =  String.fromInt (model.windowHeight - 10), width = String.fromInt (model.windowHeight - 10) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  )   ))]]
@@ -161,7 +164,7 @@ view model =
 
 displayRectangle : Model -> SmartRectangle -> Svg Msg
 displayRectangle model smartRectangle  =
-    if smartRectangle.zapped == False then
+    if smartRectangle.zapped == Born then
         svg [] [  encompassedRectangle smartRectangle.xPosition smartRectangle.startingTime smartRectangle.id smartRectangle.duration smartRectangle.color model
                ]
     else
