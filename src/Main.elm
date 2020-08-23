@@ -144,7 +144,13 @@ update msg model =
         Tick newTime ->
             ( { model | timer = model.timer + 1 }, Cmd.none)
         Die indexNo ->
-            (model, Cmd.none)
+          let
+             updateZappedElement smartRectangle = if smartRectangle.id == indexNo then
+                                                        {smartRectangle | zapped = Dead }
+                                                     else 
+                                                        smartRectangle              
+          in            
+            ({model | boxes = (List.map updateZappedElement model.boxes)}, Cmd.none)
 
 
 view : Model -> Html Msg
@@ -155,7 +161,7 @@ view model =
             , height (String.fromInt model.windowHeight)
             , viewBox (String.concat ["0 0 " , (String.fromInt model.windowWidth) , " " , (String.fromInt model.windowHeight)])
             ]
-            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Zapped) model.boxes |> List.length |> String.fromInt  ) ))]] )
+            (List.append (List.map (displayRectangle model) model.boxes ) [ Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))]] )
             -- ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  ) 
             -- (List.map (displayRectangle model) model.boxes )  
             -- [ Svg.text_ [ height =  String.fromInt (model.windowHeight - 10), width = String.fromInt (model.windowHeight - 10) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == True) model.boxes |> List.length |> String.fromInt  )   ))]]
