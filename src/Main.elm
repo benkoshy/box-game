@@ -63,7 +63,7 @@ randomSmarterRectangle level windowWidth = Random.map4
     (Random.int rectangleWidth (xRandomMaximum windowWidth)) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
-    ( Random.uniform "black" ["burlywood", "aliceblue", "deeppink", "greenyellow", "orangered"]    ) -- color
+    ( Random.uniform "black" ["yellow", "slateblue", "purple", "orange", "maroon", "lightpink", "indigo", "darkolivegreen"]    ) -- color
 
 
 startTimeByLevel : Int -> Random.Generator Int
