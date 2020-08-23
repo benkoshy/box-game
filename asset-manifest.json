@@ -1,7 +1,7 @@
 {
   "main.css": "/box-game/static/css/main.7f457dfb.chunk.css",
-  "main.js": "/box-game/static/js/main.6310c5f7.chunk.js",
-  "main.js.map": "/box-game/static/js/main.6310c5f7.chunk.js.map",
+  "main.js": "/box-game/static/js/main.370991e9.chunk.js",
+  "main.js.map": "/box-game/static/js/main.370991e9.chunk.js.map",
   "runtime~main.js": "/box-game/static/js/runtime~main.4c58cecd.js",
   "runtime~main.js.map": "/box-game/static/js/runtime~main.4c58cecd.js.map",
   "vendors~main.js": "/box-game/static/js/vendors~main.b9063112.chunk.js",
@@ -11,5 +11,5 @@
   "index.html": "/box-game/index.html",
   "logo.svg": "/box-game/logo.svg",
   "manifest.json": "/box-game/manifest.json",
-  "precache-manifest.af00c448d6a87b10cb1bb570b85947a9.js": "/box-game/precache-manifest.af00c448d6a87b10cb1bb570b85947a9.js"
+  "precache-manifest.55578a9aa775da40bdc4b3596369082c.js": "/box-game/precache-manifest.55578a9aa775da40bdc4b3596369082c.js"
 }

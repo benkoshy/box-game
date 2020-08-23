@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/box-game/favicon.ico"
   },
   {
-    "revision": "37d554ded2301f920e27cf337b326ee5",
+    "revision": "e1366285421cdf6a61e342fc15438e41",
     "url": "/box-game/index.html"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/box-game/manifest.json"
   },
   {
-    "revision": "6310c5f7c61dfc37ba08",
+    "revision": "370991e9fc69bdaaa37b",
     "url": "/box-game/static/css/main.7f457dfb.chunk.css"
   },
   {
-    "revision": "6310c5f7c61dfc37ba08",
-    "url": "/box-game/static/js/main.6310c5f7.chunk.js"
+    "revision": "370991e9fc69bdaaa37b",
+    "url": "/box-game/static/js/main.370991e9.chunk.js"
   },
   {
     "revision": "4c58cecdaede16b82b81",
