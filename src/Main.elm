@@ -161,7 +161,7 @@ view model =
     startXPosition = (String.fromInt (-150 + model.windowWidth // 2))
     startYPosition = (String.fromInt (model.windowHeight // 2))
     animationFactor = animate [ from "0", to (String.fromInt (model.windowHeight + 50)), begin ("0"), dur "3", repeatCount "1", attributeName "y"] [] 
-    initialInstructions = Svg.text_ [ x "0", y (String.fromInt (model.windowHeight + 50)), fontSize "4em"] [ Svg.text "Click on the boxes (and don't miss any)!" , animationFactor]
+    initialInstructions = Svg.text_ [ x "0", y (String.fromInt (model.windowHeight + 50)), fontSize "1em"] [ Svg.text "Click on the boxes (and don't miss any)!" , animationFactor]
   in
     
     div []
