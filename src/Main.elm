@@ -60,7 +60,7 @@ levelListGenerator level windowWidth =
 randomSmarterRectangle : Int -> Int ->  Random.Generator RectangleWithoutId
 randomSmarterRectangle level windowWidth = Random.map4
     (\x y z -> RectangleWithoutId x y z)
-    (Random.int (rectangleWidth windowWidth) (xRandomMaximum windowWidth)) -- x position
+    (Random.int (0) (xRandomMaximum windowWidth)) -- x position
     (startTimeByLevel level)       -- starting time
     (Random.int (minimumDurationByLevel level )(maxDurationByLevel)) -- duration
     ( Random.uniform "black" ["yellow", "slateblue", "purple", "orange", "maroon", "lightpink", "indigo", "darkolivegreen"]    ) -- color
