@@ -157,7 +157,8 @@ view : Model -> Html Msg
 view model =        
   let
     boxList = (List.map (displayRectangle model) model.boxes )      
-    missingBoxesDisplay = Svg.text_ [ x (String.fromInt (model.windowWidth - 100)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Missed: " ++ ( List.filter (\x -> x.zapped == Dead) model.boxes |> List.length |> String.fromInt  ) ))] 
+    zappedBoxes =   List.filter (\x -> x.zapped == Zapped) model.boxes |> List.length |> String.fromInt  
+    missingBoxesDisplay = Svg.text_ [ x (String.fromInt (model.windowWidth - 200)), y (String.fromInt (model.windowHeight - 20)) ] [(Svg.text ("Zapped: " ++ zappedBoxes)), (Svg.text (" / Total: " ++ ( model.boxes |> List.length |> String.fromInt  ) ))] 
     startXPosition = (String.fromInt (-150 + model.windowWidth // 2))
     startYPosition = (String.fromInt (model.windowHeight // 2))
     animationFactor = animate [ from "0", to (String.fromInt (model.windowHeight + 50)), begin ("0"), dur "3", repeatCount "1", attributeName "y"] [] 
