@@ -68,7 +68,7 @@ randomSmarterRectangle level windowWidth = Random.map4
 
 startTimeByLevel : Int -> Random.Generator Int
 startTimeByLevel level =
-    Random.map (\r -> r + (level - 1)* 13) (Random.int 0 8)
+    Random.map (\r -> r + (level - 1)* 11) (Random.int 0 8)
 
 minimumDurationByLevel : Int -> Int
 minimumDurationByLevel level =
